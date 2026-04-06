@@ -202,21 +202,51 @@
       btn.innerHTML = '<span>전송 중...</span>';
       btn.disabled = true;
 
-      // Simulate async submission
-      await new Promise(r => setTimeout(r, 1200));
+       // 폼 데이터 수집
+    const formData = new FormData(contactForm);
+    const data = {
+      name: formData.get('name'),
+      company: formData.get('company'),
+      tel: formData.get('tel'),
+      email: formData.get('email'),
+      service: formData.get('service'),
+      message: formData.get('message'),
+      agree: formData.get('agree') ? true : false
+    };
+ try {
+      // 서버로 POST 요청
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
 
-      btn.style.display = 'none';
-      formSuccess.classList.add('show');
-      contactForm.reset();
+      const result = await response.json();
 
-      setTimeout(() => {
+      if (result.success) {
+        btn.style.display = 'none';
+        formSuccess.classList.add('show');
+        contactForm.reset();
+
+        setTimeout(() => {
+          btn.innerHTML = orig;
+          btn.disabled = false;
+          btn.style.display = '';
+          formSuccess.classList.remove('show');
+        }, 6000);
+      } else {
+        alert('오류: ' + result.message);
         btn.innerHTML = orig;
         btn.disabled = false;
-        btn.style.display = '';
-        formSuccess.classList.remove('show');
-      }, 6000);
-    });
-  }
+      }
+    } catch (error) {
+      console.error('오류:', error);
+      alert('메일 전송 중 오류가 발생했습니다.');
+      btn.innerHTML = orig;
+      btn.disabled = false;
+    }
+  });
+}
 
   /* ─────────────────────────────────────────
      INPUT FLOAT LABEL EFFECT
