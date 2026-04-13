@@ -15,7 +15,7 @@ async function sendEmail(name, company, tel, email, service, message) {
   try {
     // 고객에게 보낼 메일
     const customerMailOptions = {
-      from: process.env.EMAIL_USER,
+      from: 'wjddndrl3@gmail.com',
       to: email || 'J4us@j4us.co.kr',
       subject: '[J4US SOLUTION] 문의 접수 확인',
       html: `
@@ -63,7 +63,7 @@ async function sendEmail(name, company, tel, email, service, message) {
 
     // 관리자에게 보낼 메일
     const adminMailOptions = {
-      from: process.env.EMAIL_USER,
+      from: 'wjddndrl3@gmail.com',
       to: 'J4us@j4us.co.kr',
       subject: `[J4US SOLUTION] 새로운 문의 - ${name} (${service || '미선택'})`,
       html: `
