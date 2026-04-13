@@ -5,8 +5,8 @@ require('dotenv').config();
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: process.env.EMAIL_USER,     // 발신 이메일
-    pass: process.env.EMAIL_PASSWORD  // 앱 비밀번호
+    user: 'wjddndrl3@gmail.com', //process.env.EMAIL_USER,     // 발신 이메일
+    pass: 'Wjdqhfk1@3'//process.env.EMAIL_PASSWORD  // 앱 비밀번호
   }
 });
 
