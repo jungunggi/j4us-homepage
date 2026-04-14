@@ -192,8 +192,18 @@
   document.head.appendChild(navStyle);
 
   /* ─────────────────────────────────────────
-     CONTACT FORM
+     CONTACT FORM  (EmailJS)
   ───────────────────────────────────────── */
+
+  // ── EmailJS 설정 ──
+  const EMAILJS_PUBLIC_KEY  = 'PnhRJv3SI_fnFmRyY';
+  const EMAILJS_SERVICE_ID  = 'service_p0nc3uu';
+  const EMAILJS_TEMPLATE_ID = 'template_1oxliqp';
+
+  if (typeof emailjs !== 'undefined') {
+    emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+  }
+
   if (contactForm) {
     contactForm.addEventListener('submit', async e => {
       e.preventDefault();
@@ -202,51 +212,38 @@
       btn.innerHTML = '<span>전송 중...</span>';
       btn.disabled = true;
 
-       // 폼 데이터 수집
-    const formData = new FormData(contactForm);
-    const data = {
-      name: formData.get('name'),
-      company: formData.get('company'),
-      tel: formData.get('tel'),
-      email: formData.get('email'),
-      service: formData.get('service'),
-      message: formData.get('message'),
-      agree: formData.get('agree') ? true : false
-    };
- try {
-      // 서버로 POST 요청
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
+      try {
+        // EmailJS로 폼 전송 (form의 name 속성이 template 변수에 자동 매핑)
+        const result = await emailjs.sendForm(
+          EMAILJS_SERVICE_ID,
+          EMAILJS_TEMPLATE_ID,
+          contactForm
+        );
 
-      const result = await response.json();
+        if (result.status === 200) {
+          btn.style.display = 'none';
+          formSuccess.classList.add('show');
+          contactForm.reset();
 
-      if (result.success) {
-        btn.style.display = 'none';
-        formSuccess.classList.add('show');
-        contactForm.reset();
-
-        setTimeout(() => {
+          setTimeout(() => {
+            btn.innerHTML = orig;
+            btn.disabled = false;
+            btn.style.display = '';
+            formSuccess.classList.remove('show');
+          }, 6000);
+        } else {
+          alert('오류: 메일 전송에 실패했습니다. 잠시 후 다시 시도해주세요.');
           btn.innerHTML = orig;
           btn.disabled = false;
-          btn.style.display = '';
-          formSuccess.classList.remove('show');
-        }, 6000);
-      } else {
-        alert('오류: ' + result.message);
+        }
+      } catch (error) {
+        console.error('EmailJS 오류:', error);
+        alert('메일 전송 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
         btn.innerHTML = orig;
         btn.disabled = false;
       }
-    } catch (error) {
-      console.error('오류:', error);
-      alert('메일 전송 중 오류가 발생했습니다.');
-      btn.innerHTML = orig;
-      btn.disabled = false;
-    }
-  });
-}
+    });
+  }
 
   /* ─────────────────────────────────────────
      INPUT FLOAT LABEL EFFECT
